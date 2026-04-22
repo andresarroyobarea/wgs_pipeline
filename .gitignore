@@ -1,0 +1,13 @@
+results/
+data/
+ecDNA_data_test/
+log/
+benchmarks/
+notes/
+novoalign_tool/
+tests/
+tmp_files/
+workflow/resources/
+.snakemake/
+__pycache__/
+*.svg
