@@ -1,0 +1,71 @@
+# Samples
+SAMPLES: ["S1"]
+LANES: ["L001"]
+
+# Dirs
+TMPDIR: "/storage/scratch01/users/anarroyo/MM_WGS/tmp_files" # Temporary dir.
+genome_index: "workflow/resources/hg38_dbsnp146_M5.ndx" # Genome dir. 
+
+# Environments
+envs: 
+  picard: "/storage/scratch01/users/anarroyo/MM_WGS/workflow/envs/picard.yaml"
+  samtools: "/storage/scratch01/users/anarroyo/MM_WGS/workflow/envs/samtools.yaml"
+
+# Human genome
+hg_version: "hg38"
+
+# Panel
+panel: "Adaptive"
+
+# Squencing platform
+seq_platform: "Illumina"
+
+# Alignment + sorting strategy: "combined" when Novoalign + novosort in streaming and "separate" for Novoalign + novosort in two steps.
+alignment_sorting_strategy: "combined"   # combined: Novoalign + Novosort in streaming. Separate: Novoalign + Novosort in two steps.
+
+# Parameters
+parameters:
+
+  novoalign:
+
+    extra: ""
+
+  novosort:
+
+    extra: "--markduplicates"
+
+  add_replace_rg:
+
+    extra: "CREATE_INDEX=true SORT_ORDER=coordinate"
+  
+  merge_bams:
+
+    extra: "-c -O BAM"
+
+
+# Resources.
+resources:
+    default:
+        threads: 2
+        mem_mb:  2000
+        runtime: 170
+
+    novoalign:
+        threads: 30
+        mem_mb:  20000
+        runtime: 10
+      
+    novosort:
+      threads: 2
+      mem_mb: 20000
+      runtime: 10
+
+    add_replace_rg:
+        threads: 2
+        mem_mb:  3000
+        runtime: 10
+
+    merge_bams:
+        threads: 5
+        mem_mb:  8000
+        runtime: 10
