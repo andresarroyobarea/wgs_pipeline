@@ -14,20 +14,8 @@ lanes = config["LANES"]
 
 
 # ---- RULE MODULES ---- #
-pipe_mode = config["alignment_sorting_strategy"]
-
-if pipe_mode == "combined":
-
-    include: "workflow/rules/alignment_sorting.smk"
-
-elif pipe_mode == "separate":
-
-    include: "workflow/rules/alignment.smk"
-    include: "workflow/rules/sorting.smk"
-
-else:
-    raise ValueError(f"Unknown alignment_sorting_strategy: {pipe_mode}")
-
+include: "workflow/rules/alignment.smk"
+include: "workflow/rules/sorting.smk"
 include: "workflow/rules/bam_processing.smk"
 
 
