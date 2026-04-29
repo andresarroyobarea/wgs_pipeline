@@ -1,15 +1,15 @@
 # Samples
-SAMPLES: ["S1"]
-LANES: ["L001"]
+SAMPLES: ["S17"]
+LANES: ["L000"]
 
 # Dirs
-TMPDIR: "/storage/scratch01/users/anarroyo/MM_WGS/tmp_files" # Temporary dir.
+TMPDIR: "/home/andres/Escritorio/bioinfo_hematology_unit/novalign_optimization/tmp_files" # Temporary dir.
 genome_index: "workflow/resources/hg38_dbsnp146_M5.ndx" # Genome dir. 
 
 # Environments
 envs: 
-  picard: "/storage/scratch01/users/anarroyo/MM_WGS/workflow/envs/picard.yaml"
-  samtools: "/storage/scratch01/users/anarroyo/MM_WGS/workflow/envs/samtools.yaml"
+  picard: "/home/andres/Escritorio/bioinfo_hematology_unit/novalign_optimization/workflow/envs/picard.yaml"
+  samtools: "/home/andres/Escritorio/bioinfo_hematology_unit/novalign_optimization/workflow/envs/samtools.yaml"
 
 # Human genome
 hg_version: "hg38"
@@ -19,9 +19,6 @@ panel: "Adaptive"
 
 # Squencing platform
 seq_platform: "Illumina"
-
-# Alignment + sorting strategy: "combined" when Novoalign + novosort in streaming and "separate" for Novoalign + novosort in two steps.
-alignment_sorting_strategy: "combined"   # combined: Novoalign + Novosort in streaming. Separate: Novoalign + Novosort in two steps.
 
 # Parameters
 parameters:
