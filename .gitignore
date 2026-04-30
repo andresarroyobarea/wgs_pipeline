@@ -5,9 +5,11 @@ log/
 benchmarks/
 notes/
 novoalign_tool/
+other_data/
 tests/
 tmp_files/
 workflow/resources/
+workflow/rules/archive/
 .snakemake/
 __pycache__/
 *.svg
