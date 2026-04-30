@@ -1,6 +1,5 @@
-# Samples
-SAMPLES: ["S17"]
-LANES: ["L000"]
+# Units file
+units: "units.tsv"
 
 # Dirs
 TMPDIR: "/home/andres/Escritorio/bioinfo_hematology_unit/novalign_optimization/tmp_files" # Temporary dir.
