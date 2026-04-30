@@ -15,7 +15,7 @@ def get_resource(config, rule, resource) -> int:
 		return config["resources"]['default'][resource]
 	
 def get_R1_fastqs(units, wc):
-	return units.loc[wc.sample, 'fq1'].to_list()
+	return units.loc[units["sample"] == wc.sample, 'fq1'].to_list()
 
 def get_R2_fastqs(units, wc):
-    return units.loc[wc.sample, 'fq2'].to_list()
+	return units.loc[units["sample"] == wc.sample, 'fq2'].to_list()
