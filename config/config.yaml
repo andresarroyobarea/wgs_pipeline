@@ -5,6 +5,11 @@ units: "units.tsv"
 TMPDIR: "/home/andres/Escritorio/bioinfo_hematology_unit/novalign_optimization/tmp_files" # Temporary dir.
 genome_index: "workflow/resources/hg38_dbsnp146_M5.ndx" # Genome dir. 
 
+# Wrappers
+wrapper:
+  qc: "v7.2.0/bio/fastqc"
+  multiqc: "v7.2.0/bio/multiqc"
+
 # Environments
 envs: 
   picard: "/home/andres/Escritorio/bioinfo_hematology_unit/novalign_optimization/workflow/envs/picard.yaml"
@@ -19,8 +24,14 @@ panel: "Adaptive"
 # Squencing platform
 seq_platform: "Illumina"
 
+read: ["R1", "R2"]
+
 # Parameters
 parameters:
+
+  qc:
+
+    extra: "--adapters workflow/resources/FastQC/adapter_list.txt"
 
   novoalign:
 
@@ -45,7 +56,11 @@ resources:
         threads: 2
         mem_mb:  2000
         runtime: 170
-
+    qc:
+        threads: 8
+        mem_mb:  2970
+        runtime: 60
+    
     novoalign:
         threads: 30
         mem_mb:  20000
