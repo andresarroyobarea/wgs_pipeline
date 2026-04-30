@@ -1,22 +1,22 @@
 rule novoalign_paired:
     input:
-        fq1 ="data/{sample}_{lane}_R1.fastq.gz",
-        fq2 ="data/{sample}_{lane}_R2.fastq.gz",
+        fq1 ="data/{sample}_R1.fastq.gz",
+        fq2 ="data/{sample}_R2.fastq.gz",
         genome_idx = config["genome_index"]
     output:
-        aligned= temp("results/alignment/{sample}_{lane}.bam")
+        aligned= temp("results/alignment/{sample}.bam")
     params:
         novoalign_extra = config["parameters"]["novoalign"]["extra"],
     threads: 
-        get_resource(config, "novoalign", "threads")    
+        get_resource(config,"novoalign", "threads")    
     resources:
         mem_mb=get_resource(config, "novoalign", "mem_mb"),
         tmp_dir=config['TMPDIR'],
         runtime=get_resource(config, "novoalign", "runtime")
     log:
-        "log/alignment/{sample}_{lane}_alignment.log",
+        "log/alignment/{sample}_alignment.log",
     benchmark:
-        "benchmarks/alignment/{sample}_{lane}_alignment.bmk",
+        "benchmarks/alignment/{sample}_alignment.bmk",
     shell:
         """
         novoalign -d {input.genome_idx} \

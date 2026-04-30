@@ -1,8 +1,8 @@
 rule novosort:
     input:
-        aligned= "results/alignment/{sample}_{lane}.bam"
+        aligned= "results/alignment/{sample}.bam"
     output:
-        sorted= temp("results/alignment/{sample}_{lane}_sorted.bam")
+        sorted= temp("results/sorted/{sample}.bam")
     params:
         extra = config["parameters"]["novosort"]["extra"]
     threads:
@@ -12,9 +12,9 @@ rule novosort:
         tmp_dir= config["TMPDIR"],
         runtime=get_resource(config, "novosort", "runtime")
     log:
-        "log/alignment/{sample}_{lane}_novosort.log",
+        "log/sorted/{sample}_novosort.log",
     benchmark:
-        "benchmarks/alignment/{sample}_{lane}_novosort.bmk",
+        "benchmarks/sorted/{sample}_novosort.bmk",
     shell:
         """
         novosort \
