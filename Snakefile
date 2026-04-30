@@ -22,6 +22,7 @@ lanes=units['lane'].unique()
 
 # ---- RULE MODULES ---- #
 include: "workflow/rules/concat_fastq.smk"
+include: "workflow/rules/qc.smk"
 include: "workflow/rules/alignment.smk"
 include: "workflow/rules/sorting.smk"
 include: "workflow/rules/bam_processing.smk"
@@ -33,4 +34,5 @@ rule all:
         expand(
             "results/alignment_processed/{sample}.bam",
             sample=samples
-        )
+        ),
+        "results/fastqc/multiqc_report.html"
