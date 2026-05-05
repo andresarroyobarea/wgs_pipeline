@@ -108,9 +108,9 @@ rule qualimap_bamqc:
         outdir = lambda wildcards, output: os.path.dirname(output.qmap_report),
         extra_single = config["parameters"]["qualimap"]["extra_single"],
     log: 
-        "logs/QC/alignment/qualimap/bamqc/{sample}_qualimap_bamqc.log"
+        "logs/qc/alignment/qualimap/bamqc/{sample}_qualimap_bamqc.log"
     benchmark:
-        "benchmarks/{sample}_qualimap_bamqc.bmk"
+        "benchmarks/qc/alignment/qualimap/bamqc/{sample}_qualimap_bamqc.bmk"
     shell: 
         """
         qualimap bamqc \
@@ -144,7 +144,7 @@ rule qualimap_multi_bamqc:
     log: 
         "logs/qc/alignment/qualimap/multi_bamqc/qualimap_multi_bamqc.log"
     benchmark:
-        "benchmarks/qualimap_multi_bamqc.bmk"
+        "benchmarks/qc/alignment/qualimap/multi_bamqc/qualimap_multi_bamqc.bmk"
     shell:
         "qualimap multi-bamqc \
             -d {params.qmap_input} \
@@ -169,6 +169,8 @@ rule samtools_qc:
     log:
         log_stats = "log/qc/alignment/samtools_qc/{sample}_samtools_stats.log",
         log_flagstat = "log/qc/alignment/samtools_qc/{sample}_samtools_flagstat.log"
+    benchmark:
+        "benchmarks/qc/alignment/samtools_qc/{sample}_samtools_qc.bmk"
     shell:"""
         samtools stats {input.bam} -@ {threads} {params.extra_stats} > {output.samtools_stats} 2> {log.log_stats} &&
         samtools flagstat {input.bam} -@ {threads} > {output.samtools_flagstat} 2> {log.log_flagstat}
@@ -190,8 +192,8 @@ rule multiqc_concat:
         extra="--verbose",
         outdir=lambda wc, output: os.path.dirname(output.multiqc_report),
     log:
-        "logs/fastqc/multiqc.log",
+        "logs/qc/multiqc/multiqc.log",
     benchmark:
-        "benchmarks/fastqc/multiqc.bmk"
+        "benchmarks/qc/multiqc/multiqc.bmk"
     shell: 
         "multiqc {params.outdir} -o {params.outdir} {params.extra} 2> {log} "
