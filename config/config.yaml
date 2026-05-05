@@ -3,7 +3,6 @@ units: "units.tsv"
 
 # Dirs
 TMPDIR: "/home/andres/Escritorio/bioinfo_hematology_unit/novalign_optimization/tmp_files" # Temporary dir.
-genome_index: "workflow/resources/hg38_dbsnp146_M5.ndx" # Genome dir. 
 
 # Wrappers
 wrapper:
@@ -28,6 +27,7 @@ panel: "Adaptive"
 # Squencing platform
 seq_platform: "Illumina"
 
+# Reads. TODO: Identify if they could be inferred from the units file.
 read: ["R1", "R2"]
 
 # Parameters
@@ -35,16 +35,18 @@ parameters:
 
   fastqc:
 
-    extra: "--adapters workflow/resources/FastQC/adapter_list.txt"
+    extra: "--adapters workflow/resources/adapters/adapter_list.txt"
 
   fastq_screen:
-    
-    config: "workflow/resources/FastQScreen/fastq_screen.conf"
+
+    fastq_screen_db: "/home/andres/Escritorio/bioinfo_hematology_unit/resources/fastq_screen/FastQ_Screen_Genomes"
+    #config: "workflow/resources/FastQScreen/fastq_screen.conf"
     aligner: bowtie2
     extra: ""
 
   novoalign:
-
+    
+    genome_index: "workflow/resources/genome/hg38_dbsnp146_M5.ndx"
     extra: ""
 
   novosort:
