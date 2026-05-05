@@ -73,7 +73,7 @@ rule fastqc_alignment:
 
 rule qualimap_bamqc:
     input:
-        bam = "results/alignment/{sample}_Aligned.sortedByCoord.out.bam"
+        bam = "results/alignment_processed/{sample}.bam"
     output:
         "results/qc/alignment/qualimap/bamqc/{sample}/qualimapReport.html",
         "results/qc/alignment/qualimap/bamqc/{sample}/genome_results.txt"
@@ -134,6 +134,28 @@ rule qualimap_multi_bamqc:
             {params.extra_multi} 2> {log} "
 
 
+rule samtools_qc:
+    input:
+        bam = "results/alignment_processed/{sample}.bam"
+    output:
+        samtools_stats = "results/qc/alignment/samtools_qc/{sample}/{sample}.bam.stats",
+        samtools_flagstat = "results/qc/alignment/samtools_qc/{sample}/{sample}.bam.flagstat"
+    conda:
+        config["conda_envs"]["samtools"]
+    threads: 
+        get_resource(config, "samtools_qc", "threads")
+    resources:
+        mem_mb = get_resource(config, "samtools_qc", "mem_mb"),
+        runtime = get_resource(config, "samtools_qc", "runtime")
+    params:
+        extra_stats = config["parameters"]["samtools_qc"]["extra_stats"]
+    log:
+        log_stats = "log/qc/alignment/samtools_qc/{sample}_samtools_stats.log",
+        log_flagstat = "log/qc/alignment/samtools_qc/{sample}_samtools_flagstat.log"
+    shell:"""
+        samtools stats {input.bam} -@ {threads} {params.extra_stats} > {output.samtools_stats} 2> {log.log_stats} &&
+        samtools flagstat {input.bam} -@ {threads} > {output.samtools_flagstat} 2> {log.log_flagstat}
+    """
 
 
 

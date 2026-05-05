@@ -53,11 +53,16 @@ parameters:
     extra: "CREATE_INDEX=true SORT_ORDER=coordinate"
 
   qualimap:
+
     genome: HUMAN
     annotation: "path/to/annotation.gtf"
     extra_single: "-hm 3 -nr 1000 " # -p strand-specific-forward for 3' RNa-seq
     extra_multi: ""
-    
+
+  samtools_qc:
+
+    extra_stats: ""
+
 # Resources.
 resources:
     default:
@@ -93,4 +98,9 @@ resources:
     qualimap:
       threads: 8
       mem_mb: 16384
+      runtime: 10
+
+    samtools_qc:
+      threads: 5
+      mem_mb: 3000
       runtime: 10
