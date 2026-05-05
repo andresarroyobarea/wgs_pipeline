@@ -14,7 +14,10 @@ wrapper:
 envs: 
   picard: "/home/andres/Escritorio/bioinfo_hematology_unit/novalign_optimization/workflow/envs/picard.yaml"
   samtools: "/home/andres/Escritorio/bioinfo_hematology_unit/novalign_optimization/workflow/envs/samtools.yaml"
-  qc: "/home/andres/Escritorio/bioinfo_hematology_unit/novalign_optimization/workflow/envs/qc.yaml"
+  fastqc: "/home/andres/Escritorio/bioinfo_hematology_unit/novalign_optimization/workflow/envs/fastqc.yaml"
+  fastq_screen: "/home/andres/Escritorio/bioinfo_hematology_unit/novalign_optimization/workflow/envs/fastq_screen.yaml"
+  qualimap: "/home/andres/Escritorio/bioinfo_hematology_unit/novalign_optimization/workflow/envs/qualimap.yaml"
+  multiqc: "/home/andres/Escritorio/bioinfo_hematology_unit/novalign_optimization/workflow/envs/multiqc.yaml"
 
 # Human genome
 hg_version: "hg38"

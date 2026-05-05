@@ -13,7 +13,7 @@ rule fastqc_raw:
         outdir=lambda wildcards, output: os.path.dirname(output.html),
         extra = config["parameters"]["fastqc"]["extra"],
     conda:
-        config["conda_envs"]["qc"]
+        config["conda_envs"]["fastqc"]
     log:
         "logs/qc/fastqc/{sample}_{read}.log"
     benchmark:
@@ -34,7 +34,7 @@ rule fastq_screen:
         txt = "results/qc/fastq_screen/{sample}_{read}_screen.txt",
         png = "results/qc/fastq_screen/{sample}_{read}_screen.png"
     conda: 
-        config["conda_envs"]["qc"]
+        config["conda_envs"]["fastq_screen"]
     threads: 
         get_resource(config, "fastq_screen", "threads"),
     resources:
@@ -66,7 +66,7 @@ rule fastqc_alignment:
         html = "results/qc/alignment/fastqc/{sample}/{sample}_fastqc.html",
         zip = "results/qc/alignment/fastqc/{sample}/{sample}_fastqc.zip"
     conda:
-        config["conda_envs"]["qc"]
+        config["conda_envs"]["fastqc"]
     threads: 
         get_resource(config, "fastqc", "threads")
     resources:
@@ -95,7 +95,7 @@ rule qualimap_bamqc:
         qmap_report="results/qc/alignment/qualimap/bamqc/{sample}/qualimapReport.html",
         qmap_res="results/qc/alignment/qualimap/bamqc/{sample}/genome_results.txt"
     conda:
-        config["conda_envs"]["qc"]
+        config["conda_envs"]["qualimap"]
     threads: 
         get_resource(config, "qualimap", "threads")
     resources:
@@ -185,7 +185,7 @@ rule multiqc_concat:
     output:
         multiqc_report="results/qc/multiqc_report.html",
     conda:
-        config["conda_envs"]["qc"]
+        config["conda_envs"]["multiqc"]
     params:
         extra="--verbose",
         outdir=lambda wc, output: os.path.dirname(output.multiqc_report),
