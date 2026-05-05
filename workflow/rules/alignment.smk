@@ -6,7 +6,7 @@ rule novoalign_paired:
     output:
         aligned= temp("results/alignment/{sample}.bam")
     params:
-        novoalign_extra = config["parameters"]["novoalign"]["extra"],
+        extra = config["parameters"]["novoalign"]["extra"],
     threads: 
         get_resource(config,"novoalign", "threads")    
     resources:
@@ -24,6 +24,6 @@ rule novoalign_paired:
             -r All 5 \
             -c {threads} \
             -o BAM \
-            {params.novoalign_extra} \
+            {params.extra} \
             > {output.aligned} 2>> {log}
         """
