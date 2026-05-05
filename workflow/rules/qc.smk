@@ -1,6 +1,6 @@
 rule fastqc_concat:
     input:
-        concatenated_fastq = "data/{sample}_{read}.fastq.gz",
+        concat_fastq = "data/{sample}_{read}.fastq.gz",
     output:
         html = "results/qc/fastqc/{sample}_{read}_fastqc.html",
         zip = "results/qc/fastqc/{sample}_{read}_fastqc.zip",
@@ -10,12 +10,15 @@ rule fastqc_concat:
     params:
         lambda wc: "-t {}".format(get_resource(config, "qc", "threads")),
         outdir=lambda wildcards, output: os.path.dirname(output.html),
+    conda:
+        config["conda_envs"]["qc"]
     log:
         "logs/qc/fastqc/{sample}_{read}.log"
     benchmark:
         "benchmarks/qc/fastqc/{sample}_{read}.bmk"
-    wrapper: # TODO: Think about adding this wrapper as conda env.
-        config["wrapper"]["qc"]
+    wrapper:
+        "mkdir -p {params.outdir} &&"
+        "fastqc --outdir {params.outdir} --threads {threads} {input.concat_fastq} 2> {log} "
 
 
 rule fastq_screen:

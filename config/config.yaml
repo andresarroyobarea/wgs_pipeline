@@ -14,6 +14,7 @@ wrapper:
 envs: 
   picard: "/home/andres/Escritorio/bioinfo_hematology_unit/novalign_optimization/workflow/envs/picard.yaml"
   samtools: "/home/andres/Escritorio/bioinfo_hematology_unit/novalign_optimization/workflow/envs/samtools.yaml"
+  qc: "/home/andres/Escritorio/bioinfo_hematology_unit/novalign_optimization/workflow/envs/qc.yaml"
 
 # Human genome
 hg_version: "hg38"
