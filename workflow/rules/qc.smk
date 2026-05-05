@@ -82,13 +82,14 @@ rule qualimap_bamqc:
     threads: 
         get_resource(config, "qualimap", "threads")
     resources:
-        mem_mb = get_resource("qualimap", "mem_mb"),
-        runtime = get_resource("qualimap", "runtime")
+        mem_mb = get_resource(config, "qualimap", "mem_mb"),
+        runtime = get_resource(config, "qualimap", "runtime")
     params:
         genome = config["parameters"]["qualimap"]["genome"],
         annotation = config["parameters"]["qualimap"]["annotation"],
         mem = f"{get_resource(config, 'qualimap', 'mem_mb') // 1024}G"
         outdir = lambda wildcards, output: os.path.dirname(output.qmap_report),
+        extra_single = config["parameters"]["qualimap"]["extra_single"],
     log: 
         "log/QC/alignment/qualimap/bamqc/{sample}_qualimap_bamqc.log"
     benchmark:
@@ -100,8 +101,40 @@ rule qualimap_bamqc:
          -gff {params.annotation} \
          -nt {threads} \
          --outdir {params.outdir} \
+         {params.extra_single} \
          --java-mem-size={params.mem} 2> {log}
     """
+
+rule qualimap_multi_bamqc:
+    input:
+        expand("results/qc/alignment/qualimap/bamqc/{sample}/qualimapReport.html", sample = samples)
+    output:
+        qmap_report = "results/qc/alignment/qualimap/multi_bamqc/multisampleBamQcReport.html"
+    conda:
+        config["conda_envs"]["qualimap"]
+    threads:
+        # TODO: Check if this rule needs the same resources as the single-sample bamqc rule, or if it can be run with less resources. 
+        get_resource(config, "qualimap", "threads") 
+    resources:
+        mem_mb = get_resource(config, "qualimap", "mem_mb"),
+        runtime = get_resource(config, "qualimap", "runtime")
+    params: 
+        # TODO: Preparare metadata input txt file.
+        qmap_input = "metadata/qualimap_multi_bamqc_input.txt",
+        outdir = lambda wildcards, output: os.path.dirname(output.qmap_report),
+        extra_multi = config["parameters"]["qualimap"]["extra_multi"]
+    log: 
+        "log/qc/alignment/qualimap/multi_bamqc/qualimap_multi_bamqc.log"
+    benchmark:
+        "benchmarks/qualimap_multi_bamqc.bmk"
+    shell:
+        "qualimap multi-bamqc \
+            -d {params.qmap_input} \
+            --outdir {params.outdir} \
+            {params.extra_multi} 2> {log} "
+
+
+
 
 
 rule multiqc_concat:
@@ -109,6 +142,7 @@ rule multiqc_concat:
         fastqc=expand("results/fastqc/{sample}_{read}_fastqc.html", sample=samples, read=config["read"]),
         fastq_screen=expand("results/fastq_screen/{sample}_{read}_screen.txt", sample=samples, read=config["read"]),
         fastqc_alignment=expand("results/qc/alignment/fastqc/{sample}_fastqc.html", sample=samples),
+        qmap_report = "results/qc/alignment/qualimap/multi_bamqc/multisampleBamQcReport.html",
     output:
         multiqc_report="results/fastqc/multiqc_report.html",
     params:

@@ -55,8 +55,9 @@ parameters:
   qualimap:
     genome: HUMAN
     annotation: "path/to/annotation.gtf"
-    extra: "-hm 3 -nr 1000 " # -p strand-specific-forward for 3' RNa-seq
-
+    extra_single: "-hm 3 -nr 1000 " # -p strand-specific-forward for 3' RNa-seq
+    extra_multi: ""
+    
 # Resources.
 resources:
     default:
