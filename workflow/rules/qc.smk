@@ -54,8 +54,8 @@ rule fastqc_alignment:
     input:
         bam = "results/alignment_processed/{sample}.bam"
     output:
-        html = "results/qc/alignment/fastqc/{sample}_fastqc.html",
-        zip = "results/qc/alignment/fastqc/{sample}_fastqc.zip"
+        html = "results/qc/alignment/fastqc/{sample}/{sample}_fastqc.html",
+        zip = "results/qc/alignment/fastqc/{sample}/{sample}_fastqc.zip"
     conda:
         config["conda_envs"]["qc"]
     threads: 
@@ -71,6 +71,37 @@ rule fastqc_alignment:
         "mkdir -p {params.outdir} &&"
         "fastqc --outdir {params.outdir} --threads {threads} {input.bam} 2> {log} "
 
+rule qualimap_bamqc:
+    input:
+        bam = "results/alignment/{sample}_Aligned.sortedByCoord.out.bam"
+    output:
+        "results/qc/alignment/qualimap/bamqc/{sample}/qualimapReport.html",
+        "results/qc/alignment/qualimap/bamqc/{sample}/genome_results.txt"
+    conda:
+        config["conda_envs"]["qc"]
+    threads: 
+        get_resource(config, "qualimap", "threads")
+    resources:
+        mem_mb = get_resource("qualimap", "mem_mb"),
+        runtime = get_resource("qualimap", "runtime")
+    params:
+        genome = config["parameters"]["qualimap"]["genome"],
+        annotation = config["parameters"]["qualimap"]["annotation"],
+        mem = f"{get_resource(config, 'qualimap', 'mem_mb') // 1024}G"
+        outdir = lambda wildcards, output: os.path.dirname(output.qmap_report),
+    log: 
+        "log/QC/alignment/qualimap/bamqc/{sample}_qualimap_bamqc.log"
+    benchmark:
+        "benchmarks/{sample}_qualimap_bamqc.bmk"
+    shell: """
+        qualimap bamqc \
+         -bam {input.bam} \
+         -gd {params.genome} \
+         -gff {params.annotation} \
+         -nt {threads} \
+         --outdir {params.outdir} \
+         --java-mem-size={params.mem} 2> {log}
+    """
 
 
 rule multiqc_concat:

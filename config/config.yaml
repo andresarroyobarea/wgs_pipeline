@@ -35,6 +35,9 @@ parameters:
     extra: "--adapters workflow/resources/FastQC/adapter_list.txt"
 
   fastq_screen:
+    
+    config: "workflow/resources/FastQScreen/fastq_screen.conf"
+    aligner: bowtie2
     extra: ""
 
   novoalign:
@@ -48,11 +51,11 @@ parameters:
   add_replace_rg:
 
     extra: "CREATE_INDEX=true SORT_ORDER=coordinate"
-  
-  merge_bams:
 
-    extra: "-c -O BAM"
-
+  qualimap:
+    genome: HUMAN
+    annotation: "path/to/annotation.gtf"
+    extra: "-hm 3 -nr 1000 " # -p strand-specific-forward for 3' RNa-seq
 
 # Resources.
 resources:
@@ -85,8 +88,8 @@ resources:
         threads: 2
         mem_mb:  3000
         runtime: 10
-
-    merge_bams:
-        threads: 5
-        mem_mb:  8000
-        runtime: 10
+      
+    qualimap:
+      threads: 8
+      mem_mb: 16384
+      runtime: 10
