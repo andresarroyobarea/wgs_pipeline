@@ -157,14 +157,14 @@ rule samtools_qc:
         samtools flagstat {input.bam} -@ {threads} > {output.samtools_flagstat} 2> {log.log_flagstat}
     """
 
-
-
 rule multiqc_concat:
     input:
         fastqc=expand("results/fastqc/{sample}_{read}_fastqc.html", sample=samples, read=config["read"]),
         fastq_screen=expand("results/fastq_screen/{sample}_{read}_screen.txt", sample=samples, read=config["read"]),
-        fastqc_alignment=expand("results/qc/alignment/fastqc/{sample}_fastqc.html", sample=samples),
+        fastqc_alignment=expand("results/qc/alignment/fastqc/{sample}/{sample}_fastqc.html", sample=samples),
         qmap_report = "results/qc/alignment/qualimap/multi_bamqc/multisampleBamQcReport.html",
+        samtools_stats=expand("results/qc/alignment/samtools_qc/{sample}/{sample}.bam.stats", sample=samples),
+        samtools_flagstat=expand("results/qc/alignment/samtools_qc/{sample}/{sample}.bam.flagstat", sample=samples)
     output:
         multiqc_report="results/fastqc/multiqc_report.html",
     params:
