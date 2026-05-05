@@ -2,7 +2,7 @@ rule novoalign_paired:
     input:
         fq1 ="data/{sample}_R1.fastq.gz",
         fq2 ="data/{sample}_R2.fastq.gz",
-        genome_idx = config["genome_index"]
+        genome_idx = config["parameters"]["novoalign"]["genome_index"]
     output:
         aligned= temp("results/alignment/{sample}.bam")
     params:
