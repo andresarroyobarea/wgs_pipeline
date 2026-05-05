@@ -20,6 +20,9 @@ samples=units['sample'].unique()
 # Lanes
 lanes=units['lane'].unique()
 
+# TODO: ver como añadir READs aquí.
+
+
 # ---- RULE MODULES ---- #
 include: "workflow/rules/concat_fastq.smk"
 include: "workflow/rules/qc.smk"
@@ -35,4 +38,4 @@ rule all:
             "results/alignment_processed/{sample}.bam",
             sample=samples
         ),
-        "results/fastqc/multiqc_report.html"
+        "results/qc/multiqc_report.html",
