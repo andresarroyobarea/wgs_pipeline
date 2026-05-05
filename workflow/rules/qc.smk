@@ -4,11 +4,12 @@ rule fastqc_raw:
     output:
         html = "results/qc/fastqc/{sample}_{read}_fastqc.html",
         zip = "results/qc/fastqc/{sample}_{read}_fastqc.zip",
+    threads:
+        get_resource(config, "fastqc", "threads"),
     resources:
-        mem_mb=get_resource(config, "fastqc", "mem_mb"),  # TODO: Check if this is useful when no mem parameter exists.
+        mem_mb=get_resource(config, "fastqc", "mem_mb"),
         runtime=get_resource(config, "fastqc", "runtime")
     params:
-        lambda wc: "-t {}".format(get_resource(config, "fastqc", "threads")),
         outdir=lambda wildcards, output: os.path.dirname(output.html),
         extra = config["parameters"]["fastqc"]["extra"],
     conda:
@@ -17,10 +18,14 @@ rule fastqc_raw:
         "logs/qc/fastqc/{sample}_{read}.log"
     benchmark:
         "benchmarks/qc/fastqc/{sample}_{read}.bmk"
-    wrapper:
-        "mkdir -p {params.outdir} &&"
-        "fastqc --outdir {params.outdir} --threads {threads} {input.concat_fastq} 2> {log} "
-
+    shell:
+        """
+        mkdir -p {params.outdir} &&
+        fastqc --outdir {params.outdir} \
+            --threads {threads} \
+            {input.fastq} \
+            {params.extra} 2> {log} 
+        """
 
 rule fastq_screen:
     input: 
@@ -41,14 +46,18 @@ rule fastq_screen:
         outdir = lambda wildcards, output: os.path.dirname(output.txt),
         extra = config["parameters"]["fastq_screen"]["extra"],
     log:
-        "log/qc/fastq_screen/{sample}_{read}_screen.log"
+        "logs/qc/fastq_screen/{sample}_{read}_screen.log"
     benchmark:
         "benchmarks/qc/fastq_screen/{sample}_{read}_screen.bmk"
-    shell:"""
-        fastq_screen {input.fastq} --aligner {params.aligner} \
-            --conf {params.config} --outdir {params.outdir} \
-            {params.extra} -threads {threads} 2> {log}
-    """
+    shell:
+        """
+        fastq_screen {input.fastq} \
+            --aligner {params.aligner} \
+            --conf {params.config} \
+            --outdir {params.outdir} \
+            {params.extra} \
+            --threads {threads} 2> {log}
+        """
 
 rule fastqc_alignment:
     input:
@@ -62,21 +71,29 @@ rule fastqc_alignment:
         get_resource(config, "fastqc", "threads")
     resources:
         mem_mb = get_resource(config, "fastqc", "mem_mb"),
-        runtime = get_resource(config, "fastqc", "runtime")
+        runtime = get_resource(config, "fastqc", "runtime"),
     params: 
-        outdir = lambda wildcards, output : os.path.dirname(output.html)
+        outdir = lambda wildcards, output : os.path.dirname(output.html),
+        extra = config["parameters"]["fastqc"]["extra"],
     log:
-        "log/qc/alignment/fastqc/{sample}_alignment_fastqc.log"
+        "logs/qc/alignment/fastqc/{sample}_alignment_fastqc.log"
+    benchmark:
+        "benchmarks/qc/alignment/fastqc/{sample}_alignment_fastqc.bmk"
     shell:
-        "mkdir -p {params.outdir} &&"
-        "fastqc --outdir {params.outdir} --threads {threads} {input.bam} 2> {log} "
+        """
+        mkdir -p {params.outdir} &&
+        fastqc --outdir {params.outdir} \
+            --threads {threads} \
+            {input.bam} \
+            {params.extra} 2> {log} 
+        """
 
 rule qualimap_bamqc:
     input:
         bam = "results/alignment_processed/{sample}.bam"
     output:
-        "results/qc/alignment/qualimap/bamqc/{sample}/qualimapReport.html",
-        "results/qc/alignment/qualimap/bamqc/{sample}/genome_results.txt"
+        qmap_report="results/qc/alignment/qualimap/bamqc/{sample}/qualimapReport.html",
+        qmap_res="results/qc/alignment/qualimap/bamqc/{sample}/genome_results.txt"
     conda:
         config["conda_envs"]["qc"]
     threads: 
@@ -87,14 +104,15 @@ rule qualimap_bamqc:
     params:
         genome = config["parameters"]["qualimap"]["genome"],
         annotation = config["parameters"]["qualimap"]["annotation"],
-        mem = f"{get_resource(config, 'qualimap', 'mem_mb') // 1024}G"
+        mem = f"{get_resource(config, 'qualimap', 'mem_mb') // 1024}G",
         outdir = lambda wildcards, output: os.path.dirname(output.qmap_report),
         extra_single = config["parameters"]["qualimap"]["extra_single"],
     log: 
-        "log/QC/alignment/qualimap/bamqc/{sample}_qualimap_bamqc.log"
+        "logs/QC/alignment/qualimap/bamqc/{sample}_qualimap_bamqc.log"
     benchmark:
         "benchmarks/{sample}_qualimap_bamqc.bmk"
-    shell: """
+    shell: 
+        """
         qualimap bamqc \
          -bam {input.bam} \
          -gd {params.genome} \
@@ -103,7 +121,7 @@ rule qualimap_bamqc:
          --outdir {params.outdir} \
          {params.extra_single} \
          --java-mem-size={params.mem} 2> {log}
-    """
+        """
 
 rule qualimap_multi_bamqc:
     input:
@@ -124,7 +142,7 @@ rule qualimap_multi_bamqc:
         outdir = lambda wildcards, output: os.path.dirname(output.qmap_report),
         extra_multi = config["parameters"]["qualimap"]["extra_multi"]
     log: 
-        "log/qc/alignment/qualimap/multi_bamqc/qualimap_multi_bamqc.log"
+        "logs/qc/alignment/qualimap/multi_bamqc/qualimap_multi_bamqc.log"
     benchmark:
         "benchmarks/qualimap_multi_bamqc.bmk"
     shell:
@@ -132,7 +150,6 @@ rule qualimap_multi_bamqc:
             -d {params.qmap_input} \
             --outdir {params.outdir} \
             {params.extra_multi} 2> {log} "
-
 
 rule samtools_qc:
     input:
@@ -159,14 +176,16 @@ rule samtools_qc:
 
 rule multiqc_concat:
     input:
-        fastqc=expand("results/fastqc/{sample}_{read}_fastqc.html", sample=samples, read=config["read"]),
-        fastq_screen=expand("results/fastq_screen/{sample}_{read}_screen.txt", sample=samples, read=config["read"]),
+        fastqc=expand("results/qc/fastqc/{sample}_{read}_fastqc.html", sample=samples, read=config["read"]),
+        fastq_screen=expand("results/qc/fastq_screen/{sample}_{read}_screen.txt", sample=samples, read=config["read"]),
         fastqc_alignment=expand("results/qc/alignment/fastqc/{sample}/{sample}_fastqc.html", sample=samples),
         qmap_report = "results/qc/alignment/qualimap/multi_bamqc/multisampleBamQcReport.html",
         samtools_stats=expand("results/qc/alignment/samtools_qc/{sample}/{sample}.bam.stats", sample=samples),
         samtools_flagstat=expand("results/qc/alignment/samtools_qc/{sample}/{sample}.bam.flagstat", sample=samples)
     output:
-        multiqc_report="results/fastqc/multiqc_report.html",
+        multiqc_report="results/qc/multiqc_report.html",
+    conda:
+        config["conda_envs"]["qc"]
     params:
         extra="--verbose",
         outdir=lambda wc, output: os.path.dirname(output.multiqc_report),
@@ -174,5 +193,5 @@ rule multiqc_concat:
         "logs/fastqc/multiqc.log",
     benchmark:
         "benchmarks/fastqc/multiqc.bmk"
-    wrapper:
-        config["wrapper"]["multiqc"]
+    shell: 
+        "multiqc {params.outdir} -o {params.outdir} {params.extra} 2> {log} "

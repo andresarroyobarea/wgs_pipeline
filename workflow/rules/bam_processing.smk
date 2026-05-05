@@ -16,7 +16,7 @@ rule add_replace_rg:
         tmp_dir = config['TMPDIR'],
         runtime=get_resource(config, "add_replace_rg", "runtime")
     log:
-        "log/alignment_processed/{sample}_add_or_replace.log",
+        "logs/alignment_processed/{sample}_add_or_replace.log",
     benchmark:
         "benchmarks/alignment_processed/{sample}_add_replace_rg.bmk",
     shell: 

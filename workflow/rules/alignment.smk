@@ -14,7 +14,7 @@ rule novoalign_paired:
         tmp_dir=config['TMPDIR'],
         runtime=get_resource(config, "novoalign", "runtime")
     log:
-        "log/alignment/{sample}_alignment.log",
+        "logs/alignment/{sample}_alignment.log",
     benchmark:
         "benchmarks/alignment/{sample}_alignment.bmk",
     shell:

@@ -12,7 +12,7 @@ rule novosort:
         tmp_dir= config["TMPDIR"],
         runtime=get_resource(config, "novosort", "runtime")
     log:
-        "log/sorted/{sample}_novosort.log",
+        "logs/sorted/{sample}_novosort.log",
     benchmark:
         "benchmarks/sorted/{sample}_novosort.bmk",
     shell:
