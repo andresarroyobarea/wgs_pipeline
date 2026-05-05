@@ -1,4 +1,4 @@
-rule fastqc_concat:
+rule fastqc_raw:
     input:
         fastq = "data/{sample}_{read}.fastq.gz",
     output:
@@ -50,11 +50,34 @@ rule fastq_screen:
             {params.extra} -threads {threads} 2> {log}
     """
 
-# Añadir output de FASTQ screen aqui
+rule fastqc_alignment:
+    input:
+        bam = "results/alignment_processed/{sample}.bam"
+    output:
+        html = "results/qc/alignment/fastqc/{sample}_fastqc.html",
+        zip = "results/qc/alignment/fastqc/{sample}_fastqc.zip"
+    conda:
+        config["conda_envs"]["qc"]
+    threads: 
+        get_resource(config, "fastqc", "threads")
+    resources:
+        mem_mb = get_resource(config, "fastqc", "mem_mb"),
+        runtime = get_resource(config, "fastqc", "runtime")
+    params: 
+        outdir = lambda wildcards, output : os.path.dirname(output.html)
+    log:
+        "log/qc/alignment/fastqc/{sample}_alignment_fastqc.log"
+    shell:
+        "mkdir -p {params.outdir} &&"
+        "fastqc --outdir {params.outdir} --threads {threads} {input.bam} 2> {log} "
+
+
+
 rule multiqc_concat:
     input:
         fastqc=expand("results/fastqc/{sample}_{read}_fastqc.html", sample=samples, read=config["read"]),
         fastq_screen=expand("results/fastq_screen/{sample}_{read}_screen.txt", sample=samples, read=config["read"]),
+        fastqc_alignment=expand("results/qc/alignment/fastqc/{sample}_fastqc.html", sample=samples),
     output:
         multiqc_report="results/fastqc/multiqc_report.html",
     params:
