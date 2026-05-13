@@ -42,7 +42,8 @@ rule fastq_screen_config:
 
 rule fastq_screen:
     input: 
-        fastq = "data/{sample}_{read}.fastq.gz"
+        fastq = "data/{sample}_{read}.fastq.gz",
+        config = rules.fastq_screen_config.output.config_filled
     output: 
         txt = "results/qc/fastq_screen/{sample}_{read}_screen.txt",
         png = "results/qc/fastq_screen/{sample}_{read}_screen.png"
@@ -54,7 +55,6 @@ rule fastq_screen:
         mem_mb = get_resource(config, "fastq_screen", "mem_mb"), # TODO: Check if this is useful when no mem parameter exists.
         runtime = get_resource(config, "fastq_screen", "runtime")
     params:
-        config = config["parameters"]["fastq_screen"]["config"],
         aligner = config["parameters"]["fastq_screen"]["aligner"],
         outdir = lambda wildcards, output: os.path.dirname(output.txt),
         extra = config["parameters"]["fastq_screen"]["extra"],
@@ -65,11 +65,11 @@ rule fastq_screen:
     shell:
         """
         fastq_screen {input.fastq} \
-            --conf {params.config} \
+            --conf {input.config} \
             --aligner {params.aligner} \
             --outdir {params.outdir} \
             {params.extra} \
-            --threads {threads} 2> {log}
+            --threads {threads} > {log} 2>&1
         """
 
 rule fastqc_alignment:
