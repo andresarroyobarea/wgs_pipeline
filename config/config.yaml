@@ -30,6 +30,10 @@ seq_platform: "DNBSEQ"
 # Sequencing run
 seq_run: "F26A430000256_HOMubfrR"
 
+# Reference genome.
+reference:
+  fasta: "path/to/reference.fasta"
+  index: "workflow/resources/genome/hg38_dbsnp146_M5.ndx"
 
 # Reads. TODO: Identify if they could be inferred from the units file.
 read: ["R1", "R2"]
@@ -49,8 +53,7 @@ parameters:
     extra: ""
 
   novoalign:
-    
-    genome_index: "workflow/resources/genome/hg38_dbsnp146_M5.ndx"
+
     extra: ""
 
   novosort:
