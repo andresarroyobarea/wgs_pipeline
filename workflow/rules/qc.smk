@@ -27,6 +27,19 @@ rule fastqc_raw:
             {params.extra} 2> {log} 
         """
 
+rule fastq_screen_config:
+    input:
+        config_tpl = config["parameters"]["fastq_screen"]["config"]
+    output:
+        config_filled = "workflow/config/fastq_screen.conf"
+    params:
+        db = config["parameters"]["fastq_screen"]["fastq_screen_db"]
+    log:
+        "logs/qc/fastq_screen/fastq_screen_config.log"
+    script:
+        "workflow/utils/build_fastq_screen_config.py"
+     
+
 rule fastq_screen:
     input: 
         fastq = "data/{sample}_{read}.fastq.gz"
@@ -52,8 +65,8 @@ rule fastq_screen:
     shell:
         """
         fastq_screen {input.fastq} \
-            --aligner {params.aligner} \
             --conf {params.config} \
+            --aligner {params.aligner} \
             --outdir {params.outdir} \
             {params.extra} \
             --threads {threads} 2> {log}
