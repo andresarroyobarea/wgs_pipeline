@@ -40,8 +40,9 @@ parameters:
   fastq_screen:
 
     fastq_screen_db: "/home/andres/Escritorio/bioinfo_hematology_unit/resources/fastq_screen/FastQ_Screen_Genomes"
-    #config: "workflow/resources/FastQScreen/fastq_screen.conf"
+    config: "workflow/templates/fastq_screen.conf"
     aligner: bowtie2
+    threads: 8
     extra: ""
 
   novoalign:
