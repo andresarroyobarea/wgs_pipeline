@@ -2,14 +2,15 @@ rule add_replace_rg:
     input:
         aligned= "results/sorted/{sample}.bam"
     output:
-        fixed_rg= "results/alignment_processed/{sample}.bam"
+        bam_fixed_rg= "results/alignment_processed/{sample}.bam"
     conda: 
         config["envs"]["picard"]
     params:
-        label=lambda wildcards: f"{wildcards.sample}_{config['hg_version']}",
-        hg_version = config["hg_version"],
-        panel = config["panel"],
-        seq_platform = config["seq_platform"],
+        rg_sm = lambda wc: wc.sample,
+        rg_id = lambda wc: wc.sample,
+        rg_lb = config["library"],
+        rg_pl = config["seq_platform"],
+        rg_pu = config["seq_run"],
         extra = config["parameters"]["add_replace_rg"]["extra"]
     resources:
         mem_mb=get_resource(config, "add_replace_rg", "mem_mb"), 
@@ -23,12 +24,12 @@ rule add_replace_rg:
         """
         picard -Xmx{resources.mem_mb}m AddOrReplaceReadGroups \
             INPUT={input.aligned} \
-            OUTPUT={output.fixed_rg} \
-            RGLB={params.panel} \
-            RGPL={params.seq_platform} \
-            RGPU={params.label} \
-            RGSM={params.label} \
-            RGID={params.label} \
+            OUTPUT={output.bam_fixed_rg} \
+            RGSM={params.rg_sm} \
+            RGID={params.rg_id} \
+            RGLB={params.rg_lb} \
+            RGPL={params.rg_pl} \
+            RGPU={params.rg_pu} \
             TMP_DIR={resources.tmp_dir} \
             {params.extra} \
             2>> {log}

@@ -21,11 +21,15 @@ envs:
 # Human genome
 hg_version: "hg38"
 
-# Panel
-panel: "Adaptive"
+# Library type
+library: "WGS_SHORT_INSERT_lib""
 
 # Squencing platform
-seq_platform: "Illumina"
+seq_platform: "DNBSEQ"
+
+# Sequencing run
+seq_run: "F26A430000256_HOMubfrR"
+
 
 # Reads. TODO: Identify if they could be inferred from the units file.
 read: ["R1", "R2"]
@@ -42,7 +46,6 @@ parameters:
     fastq_screen_db: "/home/andres/Escritorio/bioinfo_hematology_unit/resources/fastq_screen/FastQ_Screen_Genomes"
     config: "workflow/templates/fastq_screen.conf"
     aligner: bowtie2
-    threads: 8
     extra: ""
 
   novoalign:
